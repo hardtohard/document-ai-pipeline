@@ -103,6 +103,52 @@ model:
 - 延迟：`p50 / p95 / p99`
 - GPU / CPU / 内存占用
 
+### 综合压测
+
+综合压测会按并发阶梯运行，并通过 SSH 到 vLLM 服务器执行 `nvidia-smi`，同步采集推理服务器 GPU 显存、利用率、温度和功耗。
+
+默认采集：
+
+- vLLM 服务器：`192.168.2.85`
+- GPU：`index 1`
+
+```powershell
+.\.venv\Scripts\python.exe scripts\benchmark_suite.py `
+  --url http://127.0.0.1:7861/api/recognize `
+  --image data\input\2.jpg `
+  --levels 1,2,4,8 `
+  --requests-per-level 20 `
+  --sample-interval 1 `
+  --gpu-scope remote `
+  --gpu-host 192.168.2.85 `
+  --gpu-index 1 `
+  --mode targeted `
+  --prompt "只提取合同编号。其他字段不要输出。"
+```
+
+如果服务器 SSH 用户名不是当前系统默认用户名，增加：
+
+```powershell
+--gpu-ssh-user 用户名
+```
+
+如果要按 GPU UUID 指定卡，增加：
+
+```powershell
+--gpu-uuid GPU-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+
+每轮会生成：
+
+- `suite_summary.json`
+- `suite_summary.csv`
+- `report.md`
+- `gpu_all.csv`
+- `details_c并发数.csv`
+- `gpu_c并发数.csv`
+
+报告里的 `recommended_concurrency` 会根据成功率和显存占用给一个保守建议值。
+
 ## GitHub 私有仓库
 
 本项目适合上传成私有仓库。注意不要提交：
