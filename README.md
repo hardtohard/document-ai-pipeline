@@ -62,9 +62,46 @@ model:
 - `data/output/model_json/`：模型输出 JSON
 - `data/output/tables/model_results.xlsx`：后台更新的 Excel 汇总
 - `data/output/debug/`：任务调试信息
+- `data/output/benchmarks/`：压测结果
 - `data/logs/`：日志和状态库
 
 这些运行数据默认被 `.gitignore` 排除，不会上传到 GitHub。
+
+## 压测
+
+先启动 Web 服务，再运行压测脚本：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\benchmark_upload.py `
+  --url http://127.0.0.1:7861/api/recognize `
+  --image data\input\2.jpg `
+  --requests 20 `
+  --concurrency 2 `
+  --mode targeted `
+  --prompt "只提取合同编号。其他字段不要输出。"
+```
+
+建议逐步提高并发，例如：
+
+```powershell
+--concurrency 1
+--concurrency 2
+--concurrency 4
+--concurrency 8
+```
+
+每次压测会生成：
+
+- `details.csv`：每个请求的耗时、状态、任务 ID、错误信息
+- `summary.csv`：本轮汇总
+- `summary.json`：完整汇总
+
+重点观察：
+
+- 吞吐量：`throughput_requests_per_second`
+- 成功率：`success_rate`
+- 延迟：`p50 / p95 / p99`
+- GPU / CPU / 内存占用
 
 ## GitHub 私有仓库
 

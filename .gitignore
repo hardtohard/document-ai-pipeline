@@ -10,6 +10,7 @@ data/output/json/*
 data/output/model_json/*
 data/output/debug/*
 data/output/tables/*
+data/output/benchmarks/*
 data/archive/success/*
 data/archive/error/*
 data/logs/*
@@ -19,6 +20,7 @@ data/logs/*
 !data/output/model_json/.gitkeep
 !data/output/debug/.gitkeep
 !data/output/tables/.gitkeep
+!data/output/benchmarks/.gitkeep
 !data/archive/success/.gitkeep
 !data/archive/error/.gitkeep
 !data/logs/.gitkeep
