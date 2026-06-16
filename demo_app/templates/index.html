@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>单据识别试用台</title>
+    <link rel="stylesheet" href="/static/style.css?v=20260616-1035">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>单据识别试用台</h1>
+          <p>上传单据图片，查看模型识别出的全部字段、表格、接口数据和原始 JSON。</p>
+        </div>
+        <div class="top-actions">
+          <a class="button secondary" id="downloadExcel" href="/download/excel">下载 Excel</a>
+        </div>
+      </header>
+
+      <section class="layout">
+        <aside class="left-panel">
+          <form id="uploadForm" class="upload-card">
+            <label class="dropzone" for="imageInput">
+              <span class="drop-title">选择或拖入图片</span>
+              <span class="drop-subtitle">JPG / PNG / BMP / TIFF / WEBP</span>
+              <input id="imageInput" name="image" type="file" accept="image/*">
+            </label>
+            <div class="prompt-box">
+              <label class="field-label" for="customPrompt">提取要求</label>
+              <div class="mode-switch" role="group" aria-label="识别模式">
+                <label>
+                  <input type="radio" name="extraction_mode" value="full" checked>
+                  <span>全量识别</span>
+                </label>
+                <label>
+                  <input type="radio" name="extraction_mode" value="targeted">
+                  <span>定向识别</span>
+                </label>
+              </div>
+              <textarea id="customPrompt" name="custom_prompt" rows="7" placeholder="例如：提取合同编号、客户名称、货物名称、型号配置、SN、数量、验收结论、盖章方、签字人和日期。没有看到的字段输出 null，不要编造。"></textarea>
+              <div class="prompt-actions">
+                <button class="chip" type="button" data-prompt-template="delivery">发货/出货</button>
+                <button class="chip" type="button" data-prompt-template="table">表格明细</button>
+                <button class="chip" type="button" data-prompt-template="acceptance">验收单</button>
+                <button class="chip muted-chip" type="button" data-prompt-template="clear">清空</button>
+              </div>
+            </div>
+            <button class="button primary" type="submit">开始识别</button>
+          </form>
+
+          <div class="status-card">
+            <div class="status-title">当前状态</div>
+            <div class="status-text" id="status">等待上传</div>
+          </div>
+
+          <section class="image-card">
+            <div class="section-head">
+              <h2>原图</h2>
+              <div class="image-tools">
+                <button class="tool-button" type="button" data-image-action="zoom-out" title="缩小">-</button>
+                <span id="zoomLevel" class="zoom-level">100%</span>
+                <button class="tool-button" type="button" data-image-action="zoom-in" title="放大">+</button>
+                <button class="tool-button" type="button" data-image-action="rotate-left" title="左转">↶</button>
+                <button class="tool-button" type="button" data-image-action="rotate-right" title="右转">↷</button>
+                <button class="tool-button wide" type="button" data-image-action="reset" title="重置">重置</button>
+              </div>
+            </div>
+            <div id="previewFrame" class="preview-frame">
+              <img id="preview" class="preview" alt="单据原图预览">
+              <div id="emptyPreview" class="empty-preview">上传后显示原图</div>
+            </div>
+          </section>
+        </aside>
+
+        <section class="right-panel">
+          <section class="overview">
+            <div class="section-head">
+              <h2>识别摘要</h2>
+              <span id="taskBadge" class="badge">未识别</span>
+            </div>
+            <div class="summary-grid" id="summaryGrid"></div>
+          </section>
+
+          <nav class="tabs">
+            <button class="tab active" data-tab="all">全部数据</button>
+            <button class="tab" data-tab="tables">表格明细</button>
+            <button class="tab" data-tab="api">生产接口</button>
+            <button class="tab" data-tab="json">原始 JSON</button>
+          </nav>
+
+          <div class="tab-pane active" id="tab-all">
+            <div class="tools-row">
+              <input id="fieldSearch" class="search" type="search" placeholder="搜索字段、值、表格内容">
+              <span id="fieldCount" class="muted"></span>
+            </div>
+            <div id="allDataView"></div>
+          </div>
+
+          <div class="tab-pane" id="tab-tables">
+            <div id="tablesView"></div>
+          </div>
+
+          <div class="tab-pane" id="tab-api">
+            <div class="api-grid">
+              <section>
+                <h2>建议入库主表</h2>
+                <table class="kv-table"><tbody id="apiHeaderBody"></tbody></table>
+              </section>
+              <section>
+                <h2>建议入库明细</h2>
+                <div id="apiLinesView"></div>
+              </section>
+            </div>
+          </div>
+
+          <div class="tab-pane" id="tab-json">
+            <div class="json-actions">
+              <a class="button secondary disabled" id="downloadJson" href="#">下载 JSON</a>
+            </div>
+            <pre id="jsonView">{}</pre>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script src="/static/app.js?v=20260616-1035"></script>
+  </body>
+</html>

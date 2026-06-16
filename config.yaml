@@ -1,0 +1,74 @@
+app:
+  input_dir: data/input
+  output_dir: data/output
+  model_json_dir: data/output/model_json
+  debug_dir: data/output/debug
+  archive_dir: data/archive
+  logs_dir: data/logs
+  stability_seconds: 2.0
+  poll_interval_seconds: 2.0
+  supported_extensions:
+    - .jpg
+    - .jpeg
+    - .png
+    - .bmp
+    - .tif
+    - .tiff
+    - .webp
+  summary_csv: data/output/tables/summary.csv
+  summary_xlsx: data/output/tables/summary.xlsx
+  model_results_xlsx: data/output/tables/model_results.xlsx
+  state_db: data/logs/state.db
+  skip_duplicate_hashes: false
+  move_processed_images: false
+
+model:
+  provider: openai_compatible
+  base_url: http://192.168.2.85:8000/v1
+  model_name: Qwen3.6-35B-A3B-FP8
+  timeout_seconds: 300
+  api_key: ""
+  temperature: 0
+  top_p: 1
+  max_tokens: 32768
+  min_tokens: 0
+  repetition_penalty: 1.0
+  max_retries: 3
+  response_format: json_object
+  enable_thinking: false
+  extra_prompt: |
+    You are a multimodal document understanding model for Chinese delivery notes, shipment notes, invoices, receipts, and warehouse documents.
+    Read the image and extract the actual business data directly into JSON.
+    Return one valid JSON object only. Do not wrap the answer in markdown. Do not explain. Do not output reasoning or analysis.
+    Keep all useful fields visible on the document. Do not force different documents into the same business fields.
+    Keep Chinese text in Chinese. Use null for unreadable values. Do not invent values.
+    Use this unified outer shape, but keep inner fields dynamic:
+    {
+      "document_category": "delivery_note | shipment_note | invoice | receipt | warehouse_note | unknown",
+      "common_fields": {
+        "document_no": null,
+        "document_date": null,
+        "sender": null,
+        "receiver": null,
+        "total_quantity": null
+      },
+      "raw_fields": {
+        "original_field_name_from_document": "value"
+      },
+      "tables": [
+        {
+          "table_name": "name or location of the table",
+          "columns": ["original column name 1", "original column name 2"],
+          "rows": [
+            {
+              "original column name 1": "value",
+              "original column name 2": "value"
+            }
+          ]
+        }
+      ],
+      "extra_fields": {
+        "other_visible_information": "value"
+      }
+    }
+  default_document_type: unknown
